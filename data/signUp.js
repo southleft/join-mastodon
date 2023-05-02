@@ -10,4 +10,19 @@ export const signUpData = {
   subHeading: {
     text: '(Step 1 of 2)',
   },
+  successHeading: {
+    textOne: 'Confirmed: ',
+    textTwo: 'Welcome to Mastodon, ',
+  },
+  successMessage: {
+    text: 'You are in! So What’s Next?',
+  },
+  buttonOne: {
+    text: 'Add Your Profile Basics',
+    link: '/enhance-account',
+  },
+  buttonTwo: {
+    text: 'Skip This Step for Now',
+    link: '/follow-suggestions',
+  },
 };

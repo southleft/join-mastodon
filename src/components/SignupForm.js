@@ -6,6 +6,9 @@ import cx from 'classnames';
 import Button from './molecules/Button';
 import Grid from './layout/Grid';
 import GridItem from './layout/GridItem';
+import Icon from './atoms/icon';
+
+import { signUpData as data } from '/data/signUp.js';
 
 export default function SignupForm() {
   const router = useRouter();
@@ -69,23 +72,27 @@ export default function SignupForm() {
   };
 
   return accountCreated ? (
-    <div className={componentClassName}>
-      <Grid>
-        <GridItem columnStart={4} columnEnd={10}>
+    <div className={`${componentClassName} c-signup-form--success`}>
+      <Grid className="c-grid__signup-form--success">
+        <GridItem columnStart={2} columnEnd={12}>
+          {/* <Icon iconName="success" width="91" height="102" /> */}
           <div className="u-text-align--center">
-            <h2>
-              Confirmed: Welcome to <br /> Mastodon,{' '}
+            <h2 className="c-heading u-heading--2xl">
+              {data.successHeading.textOne}
+              <br /> {data.successHeading.textTwo}{' '}
               {displayName ? displayName : username}!
             </h2>
-            <p>You are in! So What’s Next?</p>
+            <p className="c-content u-body--lg">{data.successMessage.text}</p>
           </div>
         </GridItem>
-        <GridItem columnStart={4} columnEnd={7}>
-          <Button link="/enhance-account" text="Add Your Profile Basics!" />
-        </GridItem>
-        <GridItem columnStart={7} columnEnd={10}>
-          <Button variant="secondary" link="/" text="Skip This Step for Now" />
-        </GridItem>
+      </Grid>
+      <Grid variant="autoFit">
+        <Button link={data.buttonOne.link} text={data.buttonOne.text} />
+        <Button
+          variant="secondary"
+          link={data.buttonTwo.link}
+          text={data.buttonTwo.text}
+        />
       </Grid>
     </div>
   ) : (
