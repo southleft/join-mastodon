@@ -12,6 +12,7 @@
 @import url('./molecules/card.css');
 @import url('./molecules/stepperHeader.css');
 @import url('./molecules/signupForm.css');
+@import url('./molecules/updateAccountForm.css');
 
 /* Components */
 @import url('./components/nav.css');
