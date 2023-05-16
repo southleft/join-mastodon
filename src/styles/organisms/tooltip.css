@@ -13,9 +13,10 @@
 .c-tooltip__box {
   position: absolute;
   color: var(--c-white);
+  cursor: default;
   background-color: var(--primary-background);
   padding: var(--space-md);
-  top: calc(100% + var(--space-sm));
+  top: calc(100%);
   left: 50%;
   border-radius: var(--border-radius);
   min-width: 400px;
