@@ -3,7 +3,7 @@ import Bottleneck from 'bottleneck';
 
 const limiter = new Bottleneck({
   maxConcurrent: 1,
-  minTime: 15,
+  minTime: 30,
 });
 
 export default async function follow(req, res) {
