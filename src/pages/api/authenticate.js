@@ -2,10 +2,12 @@ import axios from 'axios';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
-    const { email, password } = req.body;
-    const instanceUrl = process.env.MASTODON_INSTANCE_URL;
+    const { email, password, server } = req.body;
+    const instanceUrl = server;
     const clientId = process.env.MASTODON_CLIENT_ID;
     const clientSecret = process.env.MASTODON_CLIENT_SECRET;
+
+    console.log('AuthenticateAPI', instanceUrl);
 
     try {
       const response = await axios.post(`${instanceUrl}/oauth/token`, {
@@ -17,6 +19,7 @@ export default async function handler(req, res) {
         scope: 'read write follow',
       });
 
+      console.log('AuthenticateAPI', response.body);
       res.status(200).json({ success: true, data: response.data });
     } catch (error) {
       res.status(400).json({ success: false, error: error.response.data });

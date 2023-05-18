@@ -27,14 +27,21 @@ export default function AuthenticateUser() {
   const [user, setUser] = useState();
 
   // Authenticate the user with the provided email and password
-  const authenticateUser = async (email, password) => {
+  const authenticateUser = async (email, password, server) => {
     try {
       const response = await axios.post('/api/authenticate', {
         email,
         password,
+        server,
       });
 
-      return response.data.data.access_token;
+      const responseData = {
+        accessToken: response.data.data.access_token,
+        server: server,
+      };
+
+      console.log('authenticateUser', responseData);
+      return responseData;
     } catch (error) {
       throw new Error(
         `Error authenticating account: ${JSON.stringify(
@@ -45,11 +52,14 @@ export default function AuthenticateUser() {
   };
 
   // Verify the user's account with the provided access token
-  const verifyUserAccount = async (accessToken) => {
+  const verifyUserAccount = async (accessToken, server) => {
+    console.log('verifyUserAccount', server);
+
     try {
       const response = await axios.get(
-        `/api/verifyAccount?accessToken=${accessToken}`,
+        `/api/verifyAccount?accessToken=${accessToken}?server=${server}`,
       );
+
       setUser(response.data.data.acct);
       return response.data;
     } catch (error) {
@@ -79,8 +89,15 @@ export default function AuthenticateUser() {
     setLoading(true);
 
     try {
-      const accessToken = await authenticateUser(data.email, data.password);
-      await verifyUserAccount(accessToken);
+      const accessToken = await authenticateUser(
+        data.email,
+        data.password,
+        data.server,
+      );
+
+      console.log('onSubmit', accessToken.accessToken);
+
+      await verifyUserAccount(accessToken.accessToken, accessToken.server);
 
       // Call the handle submit success function
       handleSubmitSuccess(accessToken);
@@ -93,9 +110,10 @@ export default function AuthenticateUser() {
   // Get the access token from session storage on component mount
   useEffect(() => {
     const accessToken = sessionStorage.getItem('accessToken');
+    const serverAddress = sessionStorage.getItem('serverAddress');
     if (accessToken) {
       setStoredAccessToken(accessToken);
-      verifyUserAccount(accessToken);
+      verifyUserAccount(accessToken, serverAddress);
     }
   }, []);
 
@@ -151,6 +169,27 @@ export default function AuthenticateUser() {
                   className="c-authenticate-form"
                   onSubmit={handleSubmit(onSubmit)}>
                   <Grid className="c-grid__signup-form">
+                    <GridItem columnStart={2} columnEnd={12}>
+                      <label className="u-visually-hidden" htmlFor="server">
+                        server:
+                      </label>
+                      {errors.server && (
+                        <span className="u-margin-bottom--sm u-display--inline-block">
+                          {errors.server.message}
+                        </span>
+                      )}
+                      <input
+                        id="server"
+                        type="text"
+                        placeholder="Server.Address"
+                        className={`c-signup-form__input ${
+                          errors.server && 'c-signup-form__input--error'
+                        }`}
+                        {...register('server', {
+                          required: 'server is required',
+                        })}
+                      />
+                    </GridItem>
                     <GridItem columnStart={2} columnEnd={12}>
                       <label className="u-visually-hidden" htmlFor="email">
                         Email:
