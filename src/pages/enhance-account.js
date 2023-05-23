@@ -28,6 +28,7 @@ export default function Join() {
     useState(false);
   const [storedAccessToken, setStoredAccessToken] = useState('');
   const [user, setUser] = useState();
+  const [toggleForm, setToggleForm] = useState(false);
 
   // Handle email input change
   const handleEmailChange = (e) => {
@@ -47,6 +48,7 @@ export default function Join() {
         password,
       });
 
+      console.log(response.data)
       return response.data.data.access_token;
     } catch (error) {
       throw new Error(
@@ -84,6 +86,28 @@ export default function Join() {
     );
     setVerifiedAndAuthenticated(true);
   };
+
+  const onAuthSubmit = async (data) => {
+    console.log(data)
+    const redirectUrl = 'http://localhost:3000/enhance-account'
+    try {
+      const response = await axios.post('/api/authapp', {
+        response_type: 'code',
+        client_id: data.server,
+        redirect_uri: redirectUrl
+      });
+
+      console.log(response);
+      return response;
+    } catch (error) {
+      console.log(error);
+      throw new Error(
+        `Error authenticating account: ${JSON.stringify(
+          error.response.data,
+        )}`,
+      );
+    }
+  }  
 
   // Handle form submission
   const onSubmit = async (data) => {
@@ -165,79 +189,128 @@ export default function Join() {
               <p className="u-body--lg u-text-align--center">
                 {data.authSubHeading.text}
               </p>
-              <form
-                className="c-authenticate-form"
-                onSubmit={handleSubmit(onSubmit)}>
-                <Grid className="c-grid__signup-form">
-                  <GridItem columnStart={2} columnEnd={12}>
-                    <label className="u-visually-hidden" htmlFor="email">
-                      Email:
-                    </label>
-                    {errors.email && (
-                      <span className="u-margin-bottom--sm u-display--inline-block">
-                        {errors.email.message}
-                      </span>
-                    )}
-                    <input
-                      id="email"
-                      type="email"
-                      placeholder="Email Address"
-                      className={`c-signup-form__input ${
-                        errors.email && 'c-signup-form__input--error'
-                      }`}
-                      {...register('email', {
-                        required: 'Email is required',
-                      })}
-                    />
-                  </GridItem>
-                  <GridItem columnStart={2} columnEnd={12}>
-                    <label className="u-visually-hidden" htmlFor="password">
-                      Password:
-                    </label>
-                    {errors.password && (
-                      <span className="u-margin-bottom--sm u-display--inline-block">
-                        {errors.password.message}
-                      </span>
-                    )}
-                    <input
-                      id="password"
-                      type="password"
-                      placeholder="Password"
-                      className={`c-signup-form__input ${
-                        errors.password && 'c-signup-form__input--error'
-                      }`}
-                      {...register('password', {
-                        required: 'Password is required',
-                      })}
-                    />
-                  </GridItem>
-                </Grid>
-                {loading ? (
-                  <Grid>
+              {toggleForm ? (
+                <form
+                  className="c-authenticate-form"
+                  onSubmit={handleSubmit(onAuthSubmit)}>
+                  <Grid className="c-grid__signup-form">
                     <GridItem columnStart={2} columnEnd={12}>
-                      <div>Loading...</div>
+                        <span className="input-group-text">https://</span>
+                        <input
+                          required=""
+                          id="server"
+                          type="text"
+                          className="form-control"
+                          placeholder="mastodon.social"
+                          {...register('server', {
+                            required: 'Server is required',
+                          })}
+                        />
+                        <button className="btn btn-outline-secondary" type="submit" id="sign-in">Sign in</button>
+                      {/* <label className="u-visually-hidden" htmlFor="email">
+                        Email:
+                      </label>
+                      {errors.email && (
+                        <span className="u-margin-bottom--sm u-display--inline-block">
+                          {errors.email.message}
+                        </span>
+                      )}
+                      <input
+                        id="email"
+                        type="email"
+                        placeholder="Email Address"
+                        className={`c-signup-form__input ${
+                          errors.email && 'c-signup-form__input--error'
+                        }`}
+                        {...register('email', {
+                          required: 'Email is required',
+                        })}
+                      /> */}
+                    </GridItem>
+                    <GridItem columnStart={2} columnEnd={12}>
+                      <div><p>Still need to authenticate <span onClick={() =>setToggleForm(false)}>Click here</span></p></div>
                     </GridItem>
                   </Grid>
-                ) : (
-                  // Shows the validation message if there the page doesn't redirect
-                  <Grid>
+                </form>
+              ) : (
+                <form
+                  className="c-authenticate-form"
+                  onSubmit={handleSubmit(onSubmit)}>
+                  <Grid className="c-grid__signup-form">
                     <GridItem columnStart={2} columnEnd={12}>
-                      <div>
-                        {validationMessage && (
-                          <p className="u-margin-top--lg u-body--copy">
-                            {validationMessage}
-                          </p>
-                        )}
-                      </div>
-                      <Button
-                        className="c-button__auth"
-                        type="submit"
-                        text="Log in &amp; Authenticate"
+                      <label className="u-visually-hidden" htmlFor="email">
+                        Email:
+                      </label>
+                      {errors.email && (
+                        <span className="u-margin-bottom--sm u-display--inline-block">
+                          {errors.email.message}
+                        </span>
+                      )}
+                      <input
+                        id="email"
+                        type="email"
+                        placeholder="Email Address"
+                        className={`c-signup-form__input ${
+                          errors.email && 'c-signup-form__input--error'
+                        }`}
+                        {...register('email', {
+                          required: 'Email is required',
+                        })}
                       />
                     </GridItem>
+                    <GridItem columnStart={2} columnEnd={12}>
+                      <label className="u-visually-hidden" htmlFor="password">
+                        Password:
+                      </label>
+                      {errors.password && (
+                        <span className="u-margin-bottom--sm u-display--inline-block">
+                          {errors.password.message}
+                        </span>
+                      )}
+                      <input
+                        id="password"
+                        type="password"
+                        placeholder="Password"
+                        className={`c-signup-form__input ${
+                          errors.password && 'c-signup-form__input--error'
+                        }`}
+                        {...register('password', {
+                          required: 'Password is required',
+                        })}
+                      />
+                    </GridItem>
+                    <GridItem columnStart={2} columnEnd={12}>
+                      <div><p>Already have an account <span onClick={() => setToggleForm(true)}>Click here</span></p></div>
+                    </GridItem>
                   </Grid>
-                )}
-              </form>
+                  {loading ? (
+                    <Grid>
+                      <GridItem columnStart={2} columnEnd={12}>
+                        <div>Loading...</div>
+                      </GridItem>
+                    </Grid>
+                  ) : (
+                    // Shows the validation message if there the page doesn't redirect
+                    <Grid>
+                      <GridItem columnStart={2} columnEnd={12}>
+                        <div>
+                          {validationMessage && (
+                            <p className="u-margin-top--lg u-body--copy">
+                              {validationMessage}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          className="c-button__auth"
+                          type="submit"
+                          text="Log in &amp; Authenticate"
+                        />
+                      </GridItem>
+                    </Grid>
+                  )}
+                  </form>
+                    
+                  )}
             </div>
           )}
         </Grid>
