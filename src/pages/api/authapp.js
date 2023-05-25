@@ -2,19 +2,41 @@ import axios from 'axios';
 
 export default async function authApp(req, res) {
   console.log('MASTODON_INSTANCE_URL:', process.env.MASTODON_INSTANCE);
+  const { accessToken } = req.body;
 
   const { tagName } = req.query;
-  console.log("RES ==============", res)
   try {
-    const response = await axios.get(
-      `${process.env.MASTODON_INSTANCE_URL}/oauth/authorize`,
+    const response = await axios.post(
+      `${process.env.MASTODON_INSTANCE_URL}/api/v1/apps/`,
       {
-        response_type: 'code',
-        client_id: '@gsarault44@mastodon.world',
-        redirect_uri: 'http://localhost:3000/enhance-account'
+        headers: {
+          Authorization: `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
+        },
+        redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
+        client_name: req.body.client_id,
+        force_login: true,
+        scopes: 'write:accounts write:follows',
+        website: 'https://join-mastodon-poc.vercel.app/enhance-account'
+      },
+    ).then(
+      response => {
+        console.log(response);
+        return axios.get(
+          `${process.env.MASTODON_INSTANCE_URL}/oauth/authorize`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
+            },
+            redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+            client_id: response.data.client_id,
+            response_type: 'code',
+            force_login: true
+          }
+        )
       }
     );
-      console.log("RESPONSE ==============",response)
+    
+    console.log('response =========', response)
     res.status(200).json({ success: true, data: response.data });
   } catch (error) {
     console.log('Error =============',error)
