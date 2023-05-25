@@ -89,7 +89,7 @@ export default function Join() {
 
   const onAuthSubmit = async (data) => {
     console.log(data)
-    const redirectUrl = 'http://localhost:3000/enhance-account'
+    const redirectUrl = 'https://join-mastodon-poc.vercel.app/enhance-account'
     try {
       const response = await axios.post('/api/authapp', {
         response_type: 'code',
