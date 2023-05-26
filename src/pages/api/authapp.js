@@ -23,29 +23,18 @@ export default async function authApp(req, res) {
     ).then(
       response => {
         console.log(response);
-        // return axios.get(
-        //   `${process.env.MASTODON_INSTANCE_URL}/oauth/authorize`,
-        //   {
-        //     headers: {
-        //       Authorization: `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
-        //     },
-        //     redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-        //     client_id: response.data.client_id,
-        //     response_type: 'code',
-        //     force_login: true
-        //   }
-        // )
-        const options = {
-          client_id: response.data.client_id,
-          response_type: 'code',
-          redirect_uri: 'https://join-mastodon-poc.vercel.app/enhance-account',
-          scope: 'write:accounts'
-        }
-        const queryString = Object.keys(options).map(key => `${key}=${encodeURIComponent(options[key])}`).join('&');
-        const loginURI = `https://${response.data.name}/oauth/authorize?${queryString}`
-        console.log('response =========', response)
-        res.status(200).json({ success: true, data: loginURI });
-        //res.redirect(loginURI)
+        return axios.get(
+          `${process.env.MASTODON_INSTANCE_URL}/oauth/authorize`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
+            },
+            redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+            client_id: response.data.client_id,
+            response_type: 'code',
+            force_login: true
+          }
+        )
       }
     );
     
