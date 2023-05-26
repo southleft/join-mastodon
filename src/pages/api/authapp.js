@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export default async function authApp(req, res) {
-  console.log('MASTODON_INSTANCE_URL:', process.env.MASTODON_INSTANCE);
+  console.log('MASTODON_INSTANCE_URL:', process.env.MASTODON_INSTANCE_URL);
   const { accessToken } = req.body;
 
   const { tagName } = req.query;
@@ -9,9 +9,6 @@ export default async function authApp(req, res) {
     const response = await axios.post(
       `${process.env.MASTODON_INSTANCE_URL}/api/v1/apps/`,
       {
-        headers: {
-          Authorization: `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
-        },
         redirect_uris: 'urn:ietf:wg:oauth:2.0:oob',
         client_name: req.body.client_id,
         force_login: true,
@@ -21,23 +18,32 @@ export default async function authApp(req, res) {
     ).then(
       response => {
         console.log(response);
-        return axios.get(
-          `${process.env.MASTODON_INSTANCE_URL}/oauth/authorize`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
-            },
-            redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
-            client_id: response.data.client_id,
-            response_type: 'code',
-            force_login: true
-          }
-        )
+        // return axios.get(
+        //   `${process.env.MASTODON_INSTANCE_URL}/oauth/authorize`,
+        //   {
+        //     headers: {
+        //       Authorization: `Bearer ${process.env.MASTODON_ACCESS_TOKEN}`,
+        //     },
+        //     redirect_uri: 'urn:ietf:wg:oauth:2.0:oob',
+        //     client_id: response.data.client_id,
+        //     response_type: 'code',
+        //     force_login: true
+        //   }
+        // )
+        const options = {
+          client_id: response.data.client_id,
+          response_type: 'code',
+          redirect_uri: 'https://join-mastodon-2m37rwb45-southleft.vercel.app/enhance-account',
+          scope: 'write:accounts'
+        }
+        const queryString = Object.keys(options).map(key => `${key}=${encodeURIComponent(options[key])}`).join('&');
+        const loginURI = `${process.env.MASTODON_INSTANCE_URL}/oauth/authorize?${queryString}`
+        console.log('response =========', response)
+        //res.status(200).json({ success: true, data: response.data });
+        res.redirect(loginURI)
       }
     );
     
-    console.log('response =========', response)
-    res.status(200).json({ success: true, data: response.data });
   } catch (error) {
     console.log('Error =============',error)
     res.status(400).json({

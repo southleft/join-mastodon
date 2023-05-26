@@ -103,7 +103,7 @@ export default function Join() {
       console.log(error);
       throw new Error(
         `Error authenticating account: ${JSON.stringify(
-          error.response.data,
+          error.response ? error.response.data : error.message,
         )}`,
       );
     }
