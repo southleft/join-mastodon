@@ -98,6 +98,7 @@ export default function Join() {
       });
 
       console.log(response);
+      window.location.href = response.data.data;
       return response;
     } catch (error) {
       console.log(error);
