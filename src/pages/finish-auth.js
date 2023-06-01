@@ -13,7 +13,9 @@ const FinishAuth = () => {
     try {
       console.log('🔥 code', code);
 
-      const res = await axios.post('/api/getToken', { code });
+      const res = await axios.post('/api/getToken', {
+        code,
+      });
       setStoredAccessToken(res.data.access_token);
     } catch (error) {
       console.log('Error getToken: ', error);
