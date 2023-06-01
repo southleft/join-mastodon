@@ -14,7 +14,7 @@ export default async function authApp(req, res) {
 
     const { client_id, redirect_uri } = appRegistrationResponse.data;
 
-    const authorizationUrl = `https://mastodon.social/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code`;
+    const authorizationUrl = `https://mastodon.social/oauth/authorize?client_id=${client_id}&redirect_uri=${redirect_uri}&response_type=code&scope=read write follow`;
 
     res.json({ authorizationUrl });
   } catch (error) {

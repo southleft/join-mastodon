@@ -9,56 +9,39 @@ const FinishAuth = () => {
   const [user, setUser] = useState();
   const { code } = router.query;
 
-  const getToken = async () => {
-    try {
-      console.log('🔥 code', code);
-
-      const res = await axios.post('/api/getToken', {
-        code,
-      });
-      setStoredAccessToken(res.data.access_token);
-    } catch (error) {
-      console.log('Error getToken: ', error);
-    }
-  };
-
-  const verifyUserAccount = async (accessToken) => {
-    try {
-      const res = await axios.get(
-        `/api/verifyUserAccount?access_token=${accessToken}`
-      );
-      console.log('User account verified:', res.data);
-      // Do something with the verified user account data
-    } catch (error) {
-      console.log('Error verifyUserAccount: ', error);
-    }
-  };
-
   useEffect(() => {
-    if (code) {
-      console.log('🔥 yep, made it here, we have code');
+    const getToken = async () => {
+      try {
+        const response = await axios.post(
+          'https://mastodon.social/oauth/token',
+          {
+            client_id: 'NRQIMMaWJPxCsFD6jZRSO-md9tb8VN8T6yKqJMhdcs4',
+            client_secret: 'w6VJzI-myOqf0oxDcdcEU58v26XMh4NKp2deQPTqcWA',
+            redirect_uri: 'http://localhost:3000/finish-auth',
+            grant_type: 'authorization_code',
+            code: code,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
+        );
 
-      getToken();
-    }
+        console.log('🔥 response', response);
+
+        // const { access_token } = response.data;
+        // setStoredAccessToken(access_token);
+
+        // return access_token;
+      } catch (error) {
+        console.log('Error getToken: ', error.response.data);
+      }
+    };
+    getToken();
   }, [code]);
 
-  useEffect(() => {
-    if (storedAccessToken) {
-      verifyUserAccount(storedAccessToken);
-    }
-  }, [storedAccessToken]);
-
-  return (
-    <div>
-      {storedAccessToken ? (
-        <div>Token: {storedAccessToken}</div>
-      ) : (
-        <div>Getting access token...</div>
-      )}
-
-      {user ? user : 'No user data yet'}
-    </div>
-  );
+  return <div></div>;
 };
 
 export default FinishAuth;
