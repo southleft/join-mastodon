@@ -18,7 +18,7 @@
     "fs": "^0.0.1-security",
     "mastodon-api": "^1.3.0",
     "net": "^1.0.2",
-    "next": "13.3.0",
+    "next": "15.5.24",
     "oauth": "^0.10.0",
     "raw-loader": "^4.0.2",
     "react": "18.2.0",
